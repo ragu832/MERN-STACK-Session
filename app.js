@@ -2,7 +2,7 @@
 const http = require('http');
 const express = require('express');
 const { error } = require('console');
-const mongooes = require('mongoose');
+const { MongoClient } = require("mongodb");
 const app = express();
 
 // Use express.json() middleware
@@ -17,19 +17,22 @@ server.listen(port, () => {
     console.log(`Server is listening on http://localhost:${port}`);
 });
 
+const uri = "mongodb+srv://ragu832:Ragu%402006@cluster0.crtcs.mongodb.net/";
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb://cluster0-shard-00-00.crtcs.mongodb.net:27017,cluster0-shard-00-01.crtcs.mongodb.net:27017,cluster0-shard-00-02.crtcs.mongodb.net:27017/Expense_Tracker?replicaSet=atlas-rcb9se-shard-0&ssl=true&authSource=admin";
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+// Create a MongoClient with a MongoClientOptions object
 const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  },
-  connectTimeoutMS: 30000, // Increase connection timeout to 30 seconds
-  socketTimeoutMS: 45000,  // Increase socket timeout to 45 seconds
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
 });
+
+// Add mongoose connection setup
+const mongoose = require('mongoose');
+mongoose.connect(uri)
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => {
+    console.error('MongoDB connection error:', err);
+    console.error('Ensure your IP address is whitelisted in MongoDB Atlas.');   
+  });
 
 async function run() {
   try {
@@ -46,27 +49,13 @@ async function run() {
 run().catch(console.dir);
 
 
-// //Database Connection
-// const mongourl = "mongodb://127.0.0.1:27017/Project";
-// mongooes.connect(mongourl)
-// .then(() => {
-//     console.log('Database connected successfully');
-//     // app.listen(port,()=>{
-
-//     //     console.log(`Server is running on port ${port}`);
-//     // })
-// })
-// .catch((error) => {
-//     console.error('Database connection error:', error);
-// });
-
-const ExpenseTrackerschema = new mongooes.Schema({
+const ExpenseTrackerschema = new mongoose.Schema({
     id: {type: String, required: true, unique: true},
     title: {type: String, required: true}, 
     amount: {type: Number, required: true}, 
 });
 
-const ExpenseTracker = mongooes.model('ExpenseTrackers', ExpenseTrackerschema);
+const ExpenseTracker = mongoose.model('ExpenseTrackers', ExpenseTrackerschema);
 
 app.get('/api/expense', async (req, res) => {
     try {
