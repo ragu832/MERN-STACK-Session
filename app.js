@@ -17,7 +17,7 @@ server.listen(port, () => {
     console.log(`Server is listening on http://localhost:${port}`);
 });
 
-const uri = "mongodb+srv://ragu832:Ragu%402006@cluster0.crtcs.mongodb.net/";
+const uri = "mongodb+srv://ragu:ragu@cluster0.crtcs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 // Create a MongoClient with a MongoClientOptions object
 const client = new MongoClient(uri, {
